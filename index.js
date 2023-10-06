@@ -1,21 +1,26 @@
 const http = require('http');
  
-const hostname = '127.0.0.1';
+const hostname = '0.0.0.0';
 const port = 3000;
  
-// console.log("Starting the server")
+console.log("Starting the server")
 //create a server object:
 http.createServer(function (req, res) {
-  res.write('Yeh jo hass rahi hai duniya!'); //write a response to the client
+  res.write('Yeh jo hass rahi hai duniya! no bro'); //write a response to the client
   res.end(); //end the response
+
+  // Simulate CPU-intensive task by calculating Fibonacci sequence
+  // const fibonacciResult = fibonacci(38); // Adjust the number for desired CPU load
+
+  // res.setHeader('Content-Type', 'text/plain');
+  // res.end(`Fibonacci result: ${fibonacciResult}`);
+
 }).listen(port); //the server object listens on port 3000
 
-// const server = http.createServer((req, res) => {
-//   res.statusCode = 200;
-//   res.setHeader('Content-Type', 'text/plain');
-//   res.end('Yeh jo hass rahi hai duniya!');
-// });
- 
-// server.listen(port, hostname, () => {
-//   console.log(`Server running at http://${hostname}:${port}/`);
-// });
+// Function to calculate Fibonacci sequence (recursive and CPU-intensive)
+function fibonacci(n) {
+  if (n <= 1) {
+    return n;
+  }
+  return fibonacci(n - 1) + fibonacci(n - 2);
+}

@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: node-kube-deployment
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: node-kube
@@ -14,7 +14,14 @@ spec:
     spec: 
       containers:
         - name: node-kube-containor
-          image: node-test:v2
-          imagePullPolicy: Never
+          image: malluop/node-test:latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 3000
+          resources:
+            requests:
+              cpu: "200m"  # 0.2 CPU cores
+              memory: "128Mi"  # 128 MB
+            limits:
+              cpu: "500m"  # 0.5 CPU cores
+              memory: "256Mi"  # 256 MB
