@@ -20,22 +20,32 @@ jobs:
       run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
 
     - name: Build Docker image
-      run: docker build -t ${{ secrets.DOCKER_USERNAME }}/node-test:latest .
+      run: docker build -t ${{ secrets.DOCKER_USERNAME }}/node-test:{{ github.run_number }} .
+
+    - name: Tag docker image
+      run: docker tag ${{ secrets.DOCKER_USERNAME }}/node-test:{{ github.run_number }} ${{ secrets.DOCKER_USERNAME }}/node-test:latest
 
     - name: Push Docker image
-      run: docker push ${{ secrets.DOCKER_USERNAME }}/node-test:latest
+      run: docker push ${{ secrets.DOCKER_USERNAME }}/node-test:{{ github.run_number }}
 
-    - name: Authenticate with GKE
-      uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
+    - name: Set up Google Cloud SDK
+      uses: google-github-actions/setup-gcloud@v0
       with:
-        version: '452.0.1' # Update to the latest version
         project_id: ${{ secrets.GCP_PROJECT_ID }}
         service_account_key: ${{ secrets.GCP_SA_KEY }}
-      env:
-        KUBE_CONFIG: ${{ runner.workspace }}/kubeconfig.yaml
+        install_components: 'gke-gcloud-auth-plugin'
+        export_default_credentials: true
+          
+    - name: Configure docker for GCP
+      run: gcloud auth configure-docker gcr.io
 
     - name: Configure kubectl
       run: gcloud container clusters get-credentials node-cluster-demo --region us-central1 --project inspired-aria-398923
     
-    - name: Apply Kubernetes files
-      run: kubectl apply -f k8s/deployment.yaml -f k8s/service.yaml
+    - name: Deploy to GKE
+      run: |
+        kubectl apply -f k8s/deployment.yaml
+        kubectl rollout restart -f k8s/deployment.yaml        
+        
+    - name: Create LoadBalancer Service
+      run: kubectl apply -f k8s/service.yaml
