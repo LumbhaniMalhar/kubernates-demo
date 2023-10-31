@@ -1,4 +1,4 @@
-name: Build and Push Docker Image
+name: Deploy to GKE
 
 on:
   push:
@@ -9,7 +9,7 @@ on:
       - 'main'
 
 jobs:
-  build-and-push:
+  deploy-to-gke:
     runs-on: ubuntu-latest
 
     steps:
@@ -24,3 +24,18 @@ jobs:
 
     - name: Push Docker image
       run: docker push ${{ secrets.DOCKER_USERNAME }}/node-test:latest
+
+    - name: Authenticate with GKE
+      uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
+      with:
+        version: '452.0.1' # Update to the latest version
+        project_id: ${{ secrets.GCP_PROJECT_ID }}
+        service_account_key: ${{ secrets.GCP_SA_KEY }}
+      env:
+        KUBE_CONFIG: ${{ runner.workspace }}/kubeconfig.yaml
+
+    - name: Configure kubectl
+      run: gcloud container clusters get-credentials node-cluster-demo --region us-central1 --project inspired-aria-398923
+    
+    - name: Apply Kubernetes files
+      run: kubectl apply -f k8s/deployment.yaml -f k8s/service.yaml
