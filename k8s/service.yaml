@@ -9,5 +9,4 @@ spec:
     - protocol: TCP
       port: 3000
       targetPort: 3000
-      nodePort: 30008
-  type: NodePort # You can use NodePort for development, LoadBalancer for cloud environments
+  type: LoadBalancer # You can use NodePort for development, LoadBalancer for cloud environments
