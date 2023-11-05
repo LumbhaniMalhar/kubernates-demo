@@ -17,32 +17,32 @@ jobs:
       run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
 
     - name: Build Docker image
-      run: docker build -t ${{ secrets.DOCKER_USERNAME }}/node-test:${{ github.run_number }} .
+      run: docker build -t ${{ secrets.DOCKER_USERNAME }}/node-test:${{ github.run_number }} -t ${{ secrets.DOCKER_USERNAME }}/node-test:latest .
 
-    - name: Tag docker image
-      run: docker tag ${{ secrets.DOCKER_USERNAME }}/node-test:${{ github.run_number }} ${{ secrets.DOCKER_USERNAME }}/node-test:latest
+    # - name: Tag docker image
+    #   run: docker tag ${{ secrets.DOCKER_USERNAME }}/node-test:${{ github.run_number }} ${{ secrets.DOCKER_USERNAME }}/node-test:latest
 
     - name: Push Docker image
-      run: docker push ${{ secrets.DOCKER_USERNAME }}/node-test:${{ github.run_number }}
+      run: docker push ${{ secrets.DOCKER_USERNAME }}/node-test --all-tags
 
-    - name: Set up Google Cloud SDK
-      uses: google-github-actions/setup-gcloud@v0
-      with:
-        project_id: ${{ secrets.GCP_PROJECT_ID }}
-        service_account_key: ${{ secrets.GCP_SA_KEY }}
-        install_components: 'gke-gcloud-auth-plugin'
-        export_default_credentials: true
+    # - name: Set up Google Cloud SDK
+    #   uses: google-github-actions/setup-gcloud@v0
+    #   with:
+    #     project_id: ${{ secrets.GCP_PROJECT_ID }}
+    #     service_account_key: ${{ secrets.GCP_SA_KEY }}
+    #     install_components: 'gke-gcloud-auth-plugin'
+    #     export_default_credentials: true
           
-    - name: Configure docker for GCP
-      run: gcloud auth configure-docker gcr.io
+    # - name: Configure docker for GCP
+    #   run: gcloud auth configure-docker gcr.io
 
-    - name: Configure kubectl
-      run: gcloud container clusters get-credentials node-cluster-demo --region us-central1 --project inspired-aria-398923
+    # - name: Configure kubectl
+    #   run: gcloud container clusters get-credentials node-cluster-demo --region us-central1 --project inspired-aria-398923
     
-    - name: Deploy to GKE
-      run: |
-        kubectl apply -f k8s/deployment.yaml
-        kubectl rollout restart -f k8s/deployment.yaml        
+    # - name: Deploy to GKE
+    #   run: |
+    #     kubectl apply -f k8s/deployment.yaml
+    #     kubectl rollout restart -f k8s/deployment.yaml        
         
-    - name: Create LoadBalancer Service
-      run: kubectl apply -f k8s/service.yaml
+    # - name: Create LoadBalancer Service
+    #   run: kubectl apply -f k8s/service.yaml
