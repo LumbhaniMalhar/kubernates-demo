@@ -6,7 +6,7 @@ const port = 3000;
 console.log("Starting the server")
 //create a server object:
 http.createServer(function (req, res) {
-  res.write('Hi Lappu face!! Hows your shift going?'); //write a response to the client
+  res.write('Aai Zavli!! Aniket please present your screen.'); //write a response to the client
   res.end(); //end the response
 
   // Simulate CPU-intensive task by calculating Fibonacci sequence
